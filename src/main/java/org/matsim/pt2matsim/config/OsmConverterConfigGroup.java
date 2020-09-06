@@ -46,6 +46,7 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 
 	private static final String OSM_FILE ="osmFile";
 	private static final String OUTPUT_NETWORK_FILE ="outputNetworkFile";
+	private static final String OUTPUT_DETAILED_LINK_GEOMETRY_FILE ="outputDetailedLinkGeometryFile";
 	private static final String OUTPUT_COORDINATE_SYSTEM ="outputCoordinateSystem";
 	private static final String KEEP_PATHS ="keepPaths";
 	private static final String MAX_LINK_LENGTH = "maxLinkLength";
@@ -55,6 +56,7 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 
 	private String osmFile;
 	private String outputNetworkFile;
+	private String outputDetailedLinkGeometryFile;
 	private String outputCoordinateSystem;
 
 	private double maxLinkLength = 500.0;
@@ -167,6 +169,16 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 	public void setOutputNetworkFile(String outputNetworkFile) {
 		this.outputNetworkFile = outputNetworkFile;
 	}
+	
+	@StringGetter(OUTPUT_DETAILED_LINK_GEOMETRY_FILE)
+	public String getOutputDetailedLinkGeometryFile() {
+		return outputDetailedLinkGeometryFile;
+	}
+
+	@StringSetter(OUTPUT_DETAILED_LINK_GEOMETRY_FILE)
+	public void setOutputDetailedLinkGeometryFile(String outputDetailedLinkGeometryFile) {
+		this.outputDetailedLinkGeometryFile = outputDetailedLinkGeometryFile;
+	}
 
 	@StringGetter(OUTPUT_COORDINATE_SYSTEM)
 	public String getOutputCoordinateSystem() {
@@ -193,6 +205,9 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 		Map<String, String> map = super.getComments();
 		map.put(OSM_FILE,
 				"The path to the osm file.");
+		map.put(OUTPUT_DETAILED_LINK_GEOMETRY_FILE,
+				"CSV file containing the full geometry (including start end end node) for each link.\n" +
+				"\t\tThis file can be used for visualization purposes in Simunto Via or GIS software.\n");
 		map.put(KEEP_PATHS,
 				"Sets whether the detailed geometry of the roads should be retained in the conversion or not.\n" +
 				"\t\tKeeping the detailed paths results in a much higher number of nodes and links in the resulting MATSim network.\n" +

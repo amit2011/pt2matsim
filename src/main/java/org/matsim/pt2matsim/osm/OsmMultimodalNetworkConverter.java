@@ -36,11 +36,14 @@ import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.IdentityTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.pt2matsim.config.OsmConverterConfigGroup;
+import org.matsim.pt2matsim.osm.LinkGeometryExporter.LinkDefinition;
 import org.matsim.pt2matsim.osm.lib.AllowedTagsFilter;
 import org.matsim.pt2matsim.osm.lib.Osm;
 import org.matsim.pt2matsim.osm.lib.OsmData;
 import org.matsim.pt2matsim.tools.NetworkTools;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -87,6 +90,7 @@ public class OsmMultimodalNetworkConverter {
 
 	protected AllowedTagsFilter ptFilter;
 	protected OsmConverterConfigGroup.OsmWayParams ptDefaultParams;
+	protected LinkGeometryExporter geometryExporter;
 
 	public OsmMultimodalNetworkConverter(OsmData osmData) {
 		this.osmData = osmData;
@@ -97,6 +101,7 @@ public class OsmMultimodalNetworkConverter {
 	 */
 	public void convert(OsmConverterConfigGroup config) {
 		this.config = config;
+		this.geometryExporter = new LinkGeometryExporter();
 		CoordinateTransformation transformation = (config.getOutputCoordinateSystem() == null ?
 				new IdentityTransformation() :
 				TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, config.getOutputCoordinateSystem()));
@@ -106,6 +111,16 @@ public class OsmMultimodalNetworkConverter {
 		convertToNetwork(transformation);
 		cleanNetwork();
 		if(config.getKeepTagsAsAttributes()) addAttributes();
+
+		if (this.config.getOutputDetailedLinkGeometryFile() != null) {
+			try {
+				geometryExporter.onlyKeepGeometryForTheseLinks(network.getLinks().keySet());
+				geometryExporter.writeToFile(Paths.get(this.config.getOutputDetailedLinkGeometryFile()));
+			} catch (IOException e) {
+				log.warn("Error while writing network geometry", e);
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -366,7 +381,8 @@ public class OsmMultimodalNetworkConverter {
 		if(network.getNodes().get(fromId) != null && network.getNodes().get(toId) != null) {
 			// forward link (in OSM digitization direction)
 			if(!onewayReverse) {
-				Link l = network.getFactory().createLink(Id.create(this.id, Link.class), network.getNodes().get(fromId), network.getNodes().get(toId));
+				Id<Link> linkId = Id.create(this.id, Link.class);
+				Link l = network.getFactory().createLink(linkId, network.getNodes().get(fromId), network.getNodes().get(toId));
 				l.setLength(length);
 				l.setFreespeed(freeSpeedForward);
 				l.setCapacity(laneCountForward * laneCapacity);
@@ -375,11 +391,13 @@ public class OsmMultimodalNetworkConverter {
 
 				network.addLink(l);
 				osmIds.put(l.getId(), way.getId());
+				geometryExporter.addLinkDefinition(linkId, new LinkDefinition(fromNode, toNode, way));
 				this.id++;
 			}
 			// backward link
 			if(!oneway) {
-				Link l = network.getFactory().createLink(Id.create(this.id, Link.class), network.getNodes().get(toId), network.getNodes().get(fromId));
+				Id<Link> linkId = Id.create(this.id, Link.class);
+				Link l = network.getFactory().createLink(linkId, network.getNodes().get(toId), network.getNodes().get(fromId));
 				l.setLength(length);
 				l.setFreespeed(freeSpeedBackward);
 				l.setCapacity(laneCountBackward * laneCapacity);
@@ -388,6 +406,7 @@ public class OsmMultimodalNetworkConverter {
 
 				network.addLink(l);
 				osmIds.put(l.getId(), way.getId());
+				geometryExporter.addLinkDefinition(linkId, new LinkDefinition(toNode, fromNode, way));
 				this.id++;
 			}
 		}
