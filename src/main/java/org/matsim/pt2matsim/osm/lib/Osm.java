@@ -196,6 +196,7 @@ public final class Osm {
 		public static final String LIVING_STREET = "living_street";
 		public static final String SERVICE = "service";
 		public final static String STOP_POSITION = "stop_position";
+		public final static String STATION = "station"; //For DMRC lines in OSM, 'public_transport" key has value 'station' (allowed, see https://wiki.openstreetmap.org/wiki/Key:public_transport). AA Sep'2020
 		public final static String BUS = "bus";
 		public final static String TROLLEYBUS = "trolleybus";
 

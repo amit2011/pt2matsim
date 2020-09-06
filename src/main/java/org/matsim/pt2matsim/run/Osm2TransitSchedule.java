@@ -43,13 +43,18 @@ public final class Osm2TransitSchedule {
 	 *             [2] output coordinate system (optional)
 	 */
 	public static void main(final String[] args) {
-		if(args.length == 2) {
-			run(args[0], args[1], null);
-		} else if(args.length == 3) {
-			run(args[0], args[1], args[2]);
-		} else {
-			throw new IllegalArgumentException("Wrong number of arguments");
-		}
+
+//		args[0] = "C:/Users/Amit Agarwal/Downloads/Delhi_OSM/Delhi_OSM-all_map.osm";
+//		args[1] = "C:/Users/Amit Agarwal/Downloads/Delhi_OSM/transitSchedule.xml.gz";
+//		args[2] = "EPSG:32643";
+
+//		if(args.length == 2) {
+//			run(args[0], args[1], null);
+//		} else if(args.length == 3) {
+			run("C:/Users/Amit Agarwal/Google Drive/iitr_gmail_drive/project_data/delhi/osm_pbf/osm_delhi_metro_lines_overpass.osm", "C:/Users/Amit Agarwal/Google Drive/iitr_gmail_drive/project_data/delhi/matsimFiles/gtfs/fromOSM/transitSchedule_fromOverpass_DMRC.xml.gz", "EPSG:32643");
+//		} else {
+//			throw new IllegalArgumentException("Wrong number of arguments");
+//		}
 	}
 
 	public static void run(String osmFile, String outputScheduleFile, String outputCoordinateSystem) {

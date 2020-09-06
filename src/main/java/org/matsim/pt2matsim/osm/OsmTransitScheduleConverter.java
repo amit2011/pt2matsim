@@ -26,6 +26,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.population.routes.RouteUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.pt.transitSchedule.api.*;
 import org.matsim.pt2matsim.osm.lib.AllowedTagsFilter;
 import org.matsim.pt2matsim.osm.lib.Osm;
@@ -70,6 +71,7 @@ public class OsmTransitScheduleConverter {
 		// initialize conversion filters
 		AllowedTagsFilter stop_position = new AllowedTagsFilter();
 		stop_position.add(Osm.ElementType.NODE, Osm.Key.PUBLIC_TRANSPORT, Osm.Value.STOP_POSITION);
+		stop_position.add(Osm.ElementType.NODE, Osm.Key.PUBLIC_TRANSPORT, Osm.Value.STATION);
 		stop_position.add(Osm.ElementType.NODE, Osm.Key.HIGHWAY, Osm.Value.BUS_STOP);
 
 		AllowedTagsFilter stop_area = new AllowedTagsFilter();
@@ -282,8 +284,6 @@ public class OsmTransitScheduleConverter {
 			id = relation.getValue("operator") + ":" + relation.getValue("name");
 		} else if(ref) {
 			id = relation.getValue("ref");
-		} else if(name) {
-			id = relation.getValue("name");
 		} else {
 			id = relation.getId().toString();
 		}
