@@ -244,7 +244,9 @@ public class OsmTransitScheduleConverter {
 		}
 
 		// one relation has two routes, forward and back
-		Id<TransitRoute> transitRouteId = Id.create(createStringId(relation) + (++routeNr), TransitRoute.class);
+		String transitRouteIdString = (relation.getTags().containsKey("name")) ? relation.getValue("name"): createStringId(relation); // DMRC has different names
+		Id<TransitRoute> transitRouteId = Id.create(transitRouteIdString, TransitRoute.class);
+		//		Id<TransitRoute> transitRouteId = Id.create(createStringId(relation) + (++routeNr), TransitRoute.class);
 		TransitRoute newTransitRoute = factory.createTransitRoute(transitRouteId, null, stopSequenceForward, relation.getTags().get(Osm.Key.ROUTE));
 		newTransitRoute.addDeparture(factory.createDeparture(Id.create("departure" + routeNr, Departure.class), 60.0));
 
